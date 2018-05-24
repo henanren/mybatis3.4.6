@@ -1,5 +1,5 @@
 /**
- *    Copyright ${license.git.copyrightYears} the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -300,6 +300,12 @@ public final class MappedStatement {
 	}
 
 	public BoundSql getBoundSql(Object parameterObject) {
+
+		String key = Thread.currentThread().getName() + ":" + Thread.currentThread().getId();
+		System.out.println(key);
+		String schema = TenantContextHolder.getTenant(key);
+		System.out.println("schema ::" + schema);
+
 		BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
 		List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 		if (parameterMappings == null || parameterMappings.isEmpty()) {
@@ -319,14 +325,14 @@ public final class MappedStatement {
 		}
 		String sql = boundSql.getSql();
 
-		if (!sql.startsWith(SCHEMA_START)) {
-			StringBuilder sb = new StringBuilder(sql.length() + 30);
+		if (!sql.startsWith(SCHEMA_START) && (schema != null && schema.length() > 0)) {
+			StringBuilder sb = new StringBuilder(sql.length() + 100);
 			sb.append(SCHEMA_START);
-			sb.append(TenantContextHolder.getTenant());
+			sb.append(schema);
 			sb.append(SCHEMA_END);
 			sb.append(sql);
 			MetaObject metaObject = SystemMetaObject.forObject(boundSql);
-			metaObject.setValue("sql", sql);
+			metaObject.setValue("sql", sb.toString());
 		}
 
 		return boundSql;

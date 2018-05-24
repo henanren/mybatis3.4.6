@@ -1,5 +1,5 @@
 /**
- *    Copyright ${license.git.copyrightYears} the original author or authors.
+ *    Copyright 2009-2018 the original author or authors.
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
@@ -14,6 +14,12 @@
  *    limitations under the License.
  */
 package com.laomn;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * 
  * @author xuruqing
@@ -21,22 +27,54 @@ package com.laomn;
  */
 public class TenantContextHolder {
 
-    private static ThreadLocal<String> tenantThreadLocal = new ThreadLocal<String>();
+	private static ThreadLocal<String> tenantThreadLocal = new ThreadLocal<String>();
+	private static Map<String, String> concurrentHashMap = new HashMap<String, String>();
+	// private static String KEY = Thread.currentThread().getName() + ":" +
+	// Thread.currentThread().getId();
 
-    public static final void setTenant(String scheme) {
-    	tenantThreadLocal.set(scheme);
-    }
+	public static final void setTenant(String key1, String scheme) {
+		String key = Thread.currentThread().getName() + ":" + Thread.currentThread().getId();
+		System.out.println(key);
+		System.out.println(key);
+		tenantThreadLocal.set(scheme);
+		concurrentHashMap.put(key1, scheme);
+	}
 
-    public static final String getTenant() {
-        String scheme = tenantThreadLocal.get();
-        if (scheme == null) {
-            scheme = "";
-        }
-        return scheme;
-    }
+	public static final String getTenant(String key1) {
+		System.out.println(key1);
+		String key = Thread.currentThread().getName() + ":" + Thread.currentThread().getId();
+		System.out.println(key);
 
-    public static final void remove() {
-    	tenantThreadLocal.remove();
-    }
+		System.out.println(key1.equals(key));
+		// String scheme = tenantThreadLocal.get();
+		// if (scheme == null) {
+		// scheme = "";
+		// }
+
+		System.out.println(concurrentHashMap.size());
+		int size = concurrentHashMap.size();
+		c.putAll(concurrentHashMap);
+		System.out.println(c.size());
+		Set<String> set = c.keySet();
+		Iterator<String> it = set.iterator();
+		while (it.hasNext()) {
+			String keyy = it.next();
+			System.out.println(keyy + "  :    " + (keyy.equals(key1)));
+
+		}
+		String scheme = concurrentHashMap.get(key1);
+		return scheme;
+	}
+
+	static Map<String, String> c = new HashMap<String, String>();
+
+	public static final void remove(String key1) {
+		String key = Thread.currentThread().getName() + ":" + Thread.currentThread().getId();
+		System.out.println(key);
+		System.out.println(key1);
+		tenantThreadLocal.remove();
+		concurrentHashMap.remove(key1);
+		System.out.println(concurrentHashMap.size());
+	}
 
 }

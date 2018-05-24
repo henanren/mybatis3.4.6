@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
 
-       Copyright ${license.git.copyrightYears} the original author or authors.
+       Copyright 2009-2018 the original author or authors.
 
        Licensed under the Apache License, Version 2.0 (the "License");
        you may not use this file except in compliance with the License.
@@ -27,16 +27,16 @@
   </parent>
 
   <artifactId>mybatis</artifactId>
-  <version>3.4.6</version>
+  <version>3.4.6-plus</version>
   <packaging>jar</packaging>
 
   <name>mybatis</name>
   <description>
-   laomn.com
+   http://www.laomn.com
   </description>
   <url>http://www.laomn.com</url>
 
-  <inceptionYear>2090</inceptionYear>
+  <inceptionYear>2009</inceptionYear>
 
   <contributors>
     <contributor>
@@ -349,7 +349,7 @@
         <artifactId>animal-sniffer-maven-plugin</artifactId>
         <version>1.16</version>
       </plugin>
-      <plugin>  
+        <plugin>  
     <groupId>org.apache.maven.plugin</groupId>  
     <artifactId>maven-compiler-plugin</artifactId>  
     <version>2.1</version>  
@@ -372,7 +372,7 @@
         <directory>${project.basedir}</directory>
         <targetPath>META-INF</targetPath>
         <includes>
-<!--           <include>LICENSE</include> -->
+          <include>LICENSE</include>
           <include>NOTICE</include>
         </includes>
       </resource>
@@ -430,7 +430,6 @@
               <artifactId>maven-bundle-plugin</artifactId>
               <version>2.5.4</version> <!-- For java 6, remain at older version -->
             </plugin>
-
         </plugins>
       </build>
     </profile>
