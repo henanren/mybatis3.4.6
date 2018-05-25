@@ -29,14 +29,22 @@ import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.scripting.LanguageDriver;
 import org.apache.ibatis.session.Configuration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
+import org.springframework.stereotype.Component;
 
-import com.laomn.TenantContextHolder;
+import com.laomn.Caller;
 
 /**
  * @author Clinton Begin
  */
-public final class MappedStatement {
-
+@Component
+public final class MappedStatement implements ApplicationContextAware {
+	private static ApplicationContext applicationContext;
+	private static final Logger logger = LoggerFactory.getLogger(MappedStatement.class);
 	private static final String SCHEMA_START = "/*!mycat:schema=";
 	private static final String SCHEMA_END = " */";
 
@@ -301,11 +309,6 @@ public final class MappedStatement {
 
 	public BoundSql getBoundSql(Object parameterObject) {
 
-		String key = Thread.currentThread().getName() + ":" + Thread.currentThread().getId();
-		System.out.println(key);
-		String schema = TenantContextHolder.getTenant(key);
-		System.out.println("schema ::" + schema);
-
 		BoundSql boundSql = sqlSource.getBoundSql(parameterObject);
 		List<ParameterMapping> parameterMappings = boundSql.getParameterMappings();
 		if (parameterMappings == null || parameterMappings.isEmpty()) {
@@ -324,7 +327,9 @@ public final class MappedStatement {
 			}
 		}
 		String sql = boundSql.getSql();
-
+		Caller caller = (Caller) MappedStatement.applicationContext.getBean(Caller.class);
+		String schema = caller.getTenant();
+		logger.info("schema ::" + schema);
 		if (!sql.startsWith(SCHEMA_START) && (schema != null && schema.length() > 0)) {
 			StringBuilder sb = new StringBuilder(sql.length() + 100);
 			sb.append(SCHEMA_START);
@@ -344,6 +349,12 @@ public final class MappedStatement {
 		} else {
 			return in.split(",");
 		}
+	}
+
+	@Override
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		MappedStatement.applicationContext = applicationContext;
+
 	}
 
 }
